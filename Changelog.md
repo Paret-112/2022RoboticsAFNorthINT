@@ -8,6 +8,10 @@ Made some changes to the movement code in HandlerPositionalAuxiliart.java
 
 > Added the driveAux function for sideways movement.
 
+> Changed velocity to power in telemetry
+
+> Replaced left1Distance, left2Distance, right1Distance, right2Distance to LAD, LFD, RAD, RFD for the drive function.
+
 ## Todo List
 
 1. Debug the changes in the robot

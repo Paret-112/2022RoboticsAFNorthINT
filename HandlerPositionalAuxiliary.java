@@ -23,12 +23,12 @@ public class HandlerPositionalAuxiliary extends LinearOpMode {
     private DcMotor duckSpin;
     private DcMotor sucker;
 
-    private void drive(double power, int left1Distance, int left2Distance, int right1Distance, int right2Distance) {
+    private void drive(double power, int LAD, int LFD, int RAD, int RFD) {
 
-        LA.setTargetPosition(LA.getCurrentPosition()+left1Distance);
-        LF.setTargetPosition(LF.getCurrentPosition()+left2Distance);
-        RA.setTargetPosition(RA.getCurrentPosition()+right1Distance);
-        RF.setTargetPosition(RF.getCurrentPosition()+right2Distance);
+        LA.setTargetPosition(LA.getCurrentPosition()+LAD);
+        LF.setTargetPosition(LF.getCurrentPosition()+LFD);
+        RA.setTargetPosition(RA.getCurrentPosition()+RAD);
+        RF.setTargetPosition(RF.getCurrentPosition()+RFD);
         LA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         LF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         RA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -36,6 +36,31 @@ public class HandlerPositionalAuxiliary extends LinearOpMode {
         LA.setPower(power);
         LF.setPower(power);
         RA.setPower(power);
+        RF.setPower(power);
+
+        while (opModeIsActive() && (LA.isBusy() || LF.isBusy() || RA.isBusy() || RF.isBusy())) {
+        }
+        
+        // set motor power back to 0
+        LA.setPower(0);
+        LF.setPower(0);
+        RA.setPower(0);
+        RF.setPower(0);
+    }
+
+    private void driveAux(double power, int LAD, int LFD, int RAD, int RFD) {
+
+        LA.setTargetPosition(LA.getCurrentPosition()+LAD);
+        LF.setTargetPosition(LF.getCurrentPosition()-LFD);
+        RA.setTargetPosition(RA.getCurrentPosition()-RAD);
+        RF.setTargetPosition(RF.getCurrentPosition()+RFD);
+        LA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        LF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        RA.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        RF.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        LA.setPower(power);
+        LF.setPower(-power);
+        RA.setPower(-power);
         RF.setPower(power);
 
         while (opModeIsActive() && (LA.isBusy() || LF.isBusy() || RA.isBusy() || RF.isBusy())) {
@@ -92,14 +117,24 @@ public class HandlerPositionalAuxiliary extends LinearOpMode {
         
 
         while (opModeIsActive()) { // Start of the OpMode. Runs until the end of the match
+            if (gamepad1.dpad_left && gamepad1.left_bumper) {
+                drive(1, -1000, -1000, 1000, 1000);
+            }
+            if (gamepad1.dpad_right && gamepad1.left_bumper) {
+                drive(1,1000, 1000, -1000, -1000);
+            }
+            
             if (gamepad1.dpad_up) {
                 drive(1, 1000, 1000, 1000, 1000);
             }
             if (gamepad1.dpad_right) {
-                drive(1, 0, 0, 1000, 1000);
+                driveAux(1, 1000, 1000, 1000, 1000);
             }
             if (gamepad1.dpad_left) {
-                drive(1, 1000, 1000, 0, 0);
+                driveAux(-1, -1000, -1000, -1000, -1000);
+            }
+            if (gamepad1.dpad_down) {
+                drive(-1, -1000, -1000, -1000, -1000);
             }
             if (gamepad2.dpad_up) {
                 bridge(1, 100, 100);
@@ -108,10 +143,10 @@ public class HandlerPositionalAuxiliary extends LinearOpMode {
                 bridge(-1, -100, -100);
             }
 
-            telemetry.addData("velocity", LA.getPower());
-            telemetry.addData("velocity", LF.getPower());
-            telemetry.addData("velocity", RA.getPower());
-            telemetry.addData("velocity", RF.getPower());
+            telemetry.addData("Power", LA.getPower());
+            telemetry.addData("Power", LF.getPower());
+            telemetry.addData("Power", RA.getPower());
+            telemetry.addData("Power", RF.getPower());
 
             telemetry.addData("position", LA.getCurrentPosition());
             telemetry.addData("position", LF.getCurrentPosition());
